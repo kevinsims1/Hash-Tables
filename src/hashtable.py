@@ -15,6 +15,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
+        self.count = 0 #count is how much is currently used
 
 
     def _hash(self, key):
@@ -51,7 +52,29 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        if self.capacity == self.count:
+            self.resize()
+
+        index = self._hash_mod(key)
+        ll = LinkedPair(key, value)
+
+        if not self.storage[index]:
+            #shifts everything to the right
+            for i in range(self.count, index, -1):
+                self.storage[i] = self.storage[i - 1]
+            #insert value
+            self.storage[index] = ll
+            self.count += 1
+        else:
+            if self.storage[index].next == None:
+                self.storage[index].next = LinkedPair(key, value)
+            else:
+                current = self.storage[index]
+                while current.next is not None:
+                    current = current.next
+                current.next = ll
+
+
 
 
 
@@ -63,7 +86,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+
+        index = self._hash_mod(key)
+
+        if not self.storage[index]:
+            print('ERROR the key does not posess a value')
+        del self.storage[index]
 
 
     def retrieve(self, key):
@@ -74,7 +102,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index]:
+            return self.storage[index]
+        else:
+            return None
 
 
     def resize(self):
@@ -84,7 +117,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        if self.capacity == len(self.storage):
+            new_capacity = self.capacity * 2
+            new_storage = [None] * new_capacity
+            for i in range(self.capacity):
+                new_storage[i] = self.storage[i]
+            self.storage = new_storage
+            self.capacity = new_capacity
 
 
 
